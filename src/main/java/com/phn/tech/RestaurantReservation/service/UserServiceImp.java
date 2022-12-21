@@ -1,55 +1,93 @@
 package com.phn.tech.RestaurantReservation.service;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.phn.tech.RestaurantReservation.entity.Admin;
-import com.phn.tech.RestaurantReservation.entity.Customer;
-import com.phn.tech.RestaurantReservation.entity.CustomerWallet;
-import com.phn.tech.RestaurantReservation.entity.Manager;
+
+
 import com.phn.tech.RestaurantReservation.entity.Reservation;
 import com.phn.tech.RestaurantReservation.entity.Restaurant;
+import com.phn.tech.RestaurantReservation.entity.Users;
 import com.phn.tech.RestaurantReservation.model.AddMoneyToWallet;
 import com.phn.tech.RestaurantReservation.model.CustomerWalletResponse;
 import com.phn.tech.RestaurantReservation.model.MakePayment;
 import com.phn.tech.RestaurantReservation.model.RestaurantModel;
-import com.phn.tech.RestaurantReservation.repository.AdminRepository;
-import com.phn.tech.RestaurantReservation.repository.CustomerRepository;
-import com.phn.tech.RestaurantReservation.repository.ManagerRepository;
+import com.phn.tech.RestaurantReservation.model.UserModel;
 import com.phn.tech.RestaurantReservation.repository.ReservationRepository;
 import com.phn.tech.RestaurantReservation.repository.RestaurantRepository;
+import com.phn.tech.RestaurantReservation.repository.UsersRepository;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class UserServiceImp implements UserService{
+public class UserServiceImp implements UserService, UserDetailsService{
 	
+
 	@Autowired
-	private CustomerRepository customerRepository;
+	private PasswordEncoder passwordEncoder;
 	
 	@Autowired
 	private RestaurantRepository restaurantRepository;
 	
 	@Autowired
-	private ManagerRepository managerRepository;
-	
-	@Autowired
-	private AdminRepository adminRepository;
+	private UsersRepository usersRepository;
 	
 	@Autowired
 	private ReservationRepository reservationRepository;
 	
 	@Autowired
 	private WalletService walletService;
-
+	
+	
 	@Override
-	public Long registerCustomer(Customer customer) {
-		Customer cust = customerRepository.save(customer);
-		return cust.getCustId();
+	public Long registerUser(@Valid UserModel userModel) {
+		Optional<Users> oUser = 
+				usersRepository.findByEmail(userModel.getEmail());
+		
+		if(oUser.isPresent()) {
+			throw new RuntimeException("Username already exist!");
+		}
+		Users user = new Users();
+
+		String encPass = passwordEncoder.encode(userModel.getPassword());
+		userModel.setPassword(encPass);
+
+		BeanUtils.copyProperties(userModel, user);
+		usersRepository.save(user);
+		return user.getUserId();
+	}
+	
+
+	//Spring Security: login
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		Users user = 
+				usersRepository.findByEmail(username)
+				.orElseThrow(() -> new UsernameNotFoundException("user already exist!"));
+		
+		User springUser = null;
+		
+		Set<GrantedAuthority> ga = new HashSet<GrantedAuthority>();
+		ga.add( new SimpleGrantedAuthority(user.getRole()));
+		log.info("Login successful, Role: "+user.getRole());
+		springUser = new User(username, user.getPassword(), ga);
+		return springUser;
 	}
 	
 	@Override
@@ -162,24 +200,22 @@ public class UserServiceImp implements UserService{
 		restaurantRepository.deleteById(id);
 	}
 
+
+
 	@Override
-	public Long registerManager(Manager manager) {
-		Manager registeredManager = managerRepository.save(manager);
-		return registeredManager.getMgId();
+	public void approvalRequestFromManager(String email) {
+		Users user = 
+				usersRepository.findByEmail(email).get();
+		user.setActive(true);
+		usersRepository.save(user);
 	}
 
 	@Override
-	public void approvalRequestFromManager(long id) {
-		Manager manager = managerRepository.findById(id).get();
-		manager.setActive(true);
-		managerRepository.save(manager);
+	public void deactivateManager(String email) {
+		Users user = 
+				usersRepository.findByEmail(email).get();
+		user.setActive(false);
+		usersRepository.save(user);
 	}
-
-	@Override
-	public void deactivateManager(long id) {
-		Manager manager = managerRepository.findById(id).get();
-		manager.setActive(false);
-		managerRepository.save(manager);
-	}
-	
+		
 }

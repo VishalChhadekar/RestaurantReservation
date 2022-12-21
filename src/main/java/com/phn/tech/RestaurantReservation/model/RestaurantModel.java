@@ -1,6 +1,6 @@
 package com.phn.tech.RestaurantReservation.model;
 
-import com.phn.tech.RestaurantReservation.entity.Restaurant;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -26,6 +26,7 @@ public class WalletServiceImp implements WalletService{
 
 	@Override
 	public CustomerWalletResponse viewWalletBalance(long id) {
+		
 		CustomerWallet customerWallet = customerWalletRepository.findByCustId(id);
 		CustomerWalletResponse response = CustomerWalletResponse.builder()
 				.CustId(id)
@@ -37,7 +38,9 @@ public class WalletServiceImp implements WalletService{
 
 	@Override
 	public void addMoneyToWallet(AddMoneyToWallet aToWallet) {
-		CustomerWallet customerWallet = customerWalletRepository.findByCustId(aToWallet.getCustId());
+		CustomerWallet customerWallet = 
+				customerWalletRepository.findByCustId(aToWallet.getCustId());
+		
 		if(customerWallet==null) {
 			CustomerWallet wallet = CustomerWallet.builder()
 					.custId(aToWallet.getCustId())
@@ -45,13 +48,16 @@ public class WalletServiceImp implements WalletService{
 					.build();
 			customerWalletRepository.save(wallet);
 		}
+		
 		customerWallet.setWalletBalance(aToWallet.getAmount());
 		customerWalletRepository.save(customerWallet);
 	}
 
 	@Override
 	public void deductAmountFromWallet(double amount, long custId) {
-		CustomerWallet customerWallet = customerWalletRepository.findByCustId(custId);
+		CustomerWallet customerWallet = 
+				customerWalletRepository.findByCustId(custId);
+		
 		customerWallet.setWalletBalance(customerWallet.getWalletBalance()-amount);
 		customerWalletRepository.save(customerWallet);
 		
@@ -59,14 +65,16 @@ public class WalletServiceImp implements WalletService{
 
 	@Override
 	public void addMoneyToAdminWallet(double amount, long adminId) {
-		AdminWallet adminWallet = adminWalletRepository.findById(adminId).get();
+		AdminWallet adminWallet = 
+				adminWalletRepository.findById(adminId).get();
 		adminWallet.setWalletBalance(adminWallet.getWalletBalance()+amount);
 		adminWalletRepository.save(adminWallet);
 	}
 
 	@Override
 	public void addMoneyToManagersWallet(double amount, long managerId) {
-		ManagerWallet managerWallet = managerWalletRepository.findById(managerId).get();
+		ManagerWallet managerWallet = 
+				managerWalletRepository.findById(managerId).get();
 		managerWallet.setWalletBalance(managerWallet.getWalletBalance()+amount);
 		managerWalletRepository.save(managerWallet);
 	}

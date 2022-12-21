@@ -4,7 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.phn.tech.RestaurantReservation.entity.CustomerWallet;
-import com.phn.tech.RestaurantReservation.model.CustomerWalletResponse;
 
 @Repository
 public interface CustomerWalletRepository extends JpaRepository<CustomerWallet, Long>{
