@@ -1,6 +1,8 @@
 server:
   port: 1033
 spring:
+  main:
+    allow-circular-references: true
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     password: Lucifer@23

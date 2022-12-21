@@ -2,6 +2,8 @@ package com.phn.tech.RestaurantReservation.service;
 
 import java.util.List;
 
+import org.springframework.security.core.userdetails.UserDetails;
+
 import com.phn.tech.RestaurantReservation.entity.Reservation;
 import com.phn.tech.RestaurantReservation.entity.Restaurant;
 
@@ -33,6 +35,8 @@ public interface UserService {
 	void deactivateManager(String email);
 
 	Long registerUser(@Valid UserModel userModel);
+
+	UserDetails loadUserByUsername(String username);
 
 
 }

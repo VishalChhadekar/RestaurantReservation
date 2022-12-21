@@ -18,11 +18,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
-
 import com.phn.tech.RestaurantReservation.entity.Reservation;
 import com.phn.tech.RestaurantReservation.entity.Restaurant;
 import com.phn.tech.RestaurantReservation.entity.Users;
 import com.phn.tech.RestaurantReservation.model.AddMoneyToWallet;
+import com.phn.tech.RestaurantReservation.model.CustomerUserDetails;
 import com.phn.tech.RestaurantReservation.model.CustomerWalletResponse;
 import com.phn.tech.RestaurantReservation.model.MakePayment;
 import com.phn.tech.RestaurantReservation.model.RestaurantModel;
@@ -36,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class UserServiceImp implements UserService, UserDetailsService{
+public class UserServiceImp implements UserService{
 	
 
 	@Autowired
@@ -79,7 +79,7 @@ public class UserServiceImp implements UserService, UserDetailsService{
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		Users user = 
 				usersRepository.findByEmail(username)
-				.orElseThrow(() -> new UsernameNotFoundException("user already exist!"));
+				.orElseThrow(() -> new UsernameNotFoundException("User not found"));
 		
 		User springUser = null;
 		
@@ -87,7 +87,8 @@ public class UserServiceImp implements UserService, UserDetailsService{
 		ga.add( new SimpleGrantedAuthority(user.getRole()));
 		log.info("Login successful, Role: "+user.getRole());
 		springUser = new User(username, user.getPassword(), ga);
-		return springUser;
+//		return (UserDetails) user;
+		return new CustomerUserDetails(user);
 	}
 	
 	@Override

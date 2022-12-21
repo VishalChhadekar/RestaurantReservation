@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,12 +23,15 @@ import com.phn.tech.RestaurantReservation.entity.Reservation;
 import com.phn.tech.RestaurantReservation.entity.Restaurant;
 import com.phn.tech.RestaurantReservation.model.AddMoneyToWallet;
 import com.phn.tech.RestaurantReservation.model.CustomerWalletResponse;
+import com.phn.tech.RestaurantReservation.model.JWTRequest;
+import com.phn.tech.RestaurantReservation.model.JWTResponse;
 import com.phn.tech.RestaurantReservation.model.LoginRequest;
 import com.phn.tech.RestaurantReservation.model.MakePayment;
 import com.phn.tech.RestaurantReservation.model.RestaurantModel;
 import com.phn.tech.RestaurantReservation.model.UserModel;
 import com.phn.tech.RestaurantReservation.service.UserService;
 import com.phn.tech.RestaurantReservation.service.WalletService;
+import com.phn.tech.RestaurantReservation.utility.JWTUtility;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +42,9 @@ public class UserController {
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private JWTUtility jwtUtility;
 
 	@Autowired
 	private WalletService walletService;
@@ -59,12 +67,31 @@ public class UserController {
 	
 	//Login
 	@PostMapping("/login")
-	public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest){
-		Authentication auth = 
-				authenticationManager.authenticate(
-						new UsernamePasswordAuthenticationToken(
-								loginRequest.getEmail(), loginRequest.getPassword()));
-		return new ResponseEntity<String>(auth.getName(),HttpStatus.OK);
+	public JWTResponse authenticate(@RequestBody JWTRequest jwtRequest) throws Exception {
+		
+		// using try catch: if authentication fails throw exception
+		try {
+
+			authenticationManager.authenticate(
+					new UsernamePasswordAuthenticationToken(
+							jwtRequest.getEmail(), jwtRequest.getPassword()));
+
+		} 
+		catch (BadCredentialsException e) {
+			throw new Exception("INVALID_CREDENTIALS", e);
+		}
+		
+		log.info("Auth success");
+
+		//If authentication successful
+		//Get user details from userDetaislService
+		final UserDetails userDetails = 
+				userService.loadUserByUsername(jwtRequest.getEmail());
+		
+		//Generate token
+		final String token = jwtUtility.generateToken(userDetails);
+		return new JWTResponse(token);
+
 	}
 	
 	
