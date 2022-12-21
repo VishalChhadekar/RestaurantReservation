@@ -9,10 +9,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.phn.tech.RestaurantReservation.entity.Users;
 
-
-
-
-
 public class CustomerUserDetails implements UserDetails {
 
 

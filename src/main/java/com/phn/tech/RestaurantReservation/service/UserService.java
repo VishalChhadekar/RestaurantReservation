@@ -17,26 +17,23 @@ public interface UserService {
 
 	Reservation tableBooking(Reservation reservation);
 
-	void makePayment(MakePayment pay);
+	void makePayment(MakePayment pay) throws Exception;
 
-	void cancelBooking(long id);
+	void cancelBooking(long id) throws Exception;
 
 	List<Restaurant> viewRestaurant();
 
 	void addRestaurant(Restaurant restaurant);
 
-	void updateRestaurant(RestaurantModel restaurantModel);
+	void updateRestaurant(RestaurantModel restaurantModel) throws Exception;
 
 	void deleteRestaurant(long id);
 
 
-	void approvalRequestFromManager(String email);
+	void approvalRequestFromManager(String email) throws Exception;
 
-	void deactivateManager(String email);
+	void deactivateManager(String email) throws Exception;
 
-	Long registerUser(@Valid UserModel userModel);
-
-	UserDetails loadUserByUsername(String username);
-
+	Long registerUser(@Valid UserModel userModel) throws Exception;
 
 }

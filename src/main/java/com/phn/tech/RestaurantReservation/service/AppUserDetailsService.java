@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.phn.tech.RestaurantReservation.entity.Users;
+import com.phn.tech.RestaurantReservation.exception.UserNotFoundException;
 import com.phn.tech.RestaurantReservation.model.CustomerUserDetails;
 import com.phn.tech.RestaurantReservation.repository.UsersRepository;
 
@@ -29,17 +30,20 @@ public class AppUserDetailsService implements UserDetailsService{
 	@Override
 	@Primary
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		Users user = 
-				usersRepository.findByEmail(username)
-				.orElseThrow(() -> new UsernameNotFoundException("User not found"));
+		Users user = null;
+		try {
+			user = usersRepository.findByEmail(username)
+			.orElseThrow(() -> new UserNotFoundException());
+		} catch (UserNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
-		User springUser = null;
-		
+		User springUser;
 		Set<GrantedAuthority> ga = new HashSet<GrantedAuthority>();
 		ga.add( new SimpleGrantedAuthority(user.getRole()));
 		log.info("Login successful, Role: "+user.getRole());
 		springUser = new User(username, user.getPassword(), ga);
-//		return (UserDetails) user;
 		return new CustomerUserDetails(user);
 
 	}
