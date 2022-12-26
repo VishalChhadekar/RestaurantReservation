@@ -6,7 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.phn.tech.RestaurantReservation.entity.Reservation;
 import com.phn.tech.RestaurantReservation.entity.Restaurant;
-
+import com.phn.tech.RestaurantReservation.entity.RestaurantTable;
 import com.phn.tech.RestaurantReservation.model.MakePayment;
 import com.phn.tech.RestaurantReservation.model.RestaurantModel;
 import com.phn.tech.RestaurantReservation.model.UserModel;
@@ -35,5 +35,7 @@ public interface UserService {
 	void deactivateManager(String email) throws Exception;
 
 	Long registerUser(@Valid UserModel userModel) throws Exception;
+
+//	Long addTable(RestaurantTable table);
 
 }

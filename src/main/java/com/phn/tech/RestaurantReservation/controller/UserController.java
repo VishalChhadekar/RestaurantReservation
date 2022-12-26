@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.phn.tech.RestaurantReservation.entity.Reservation;
 import com.phn.tech.RestaurantReservation.entity.Restaurant;
+import com.phn.tech.RestaurantReservation.entity.RestaurantTable;
 import com.phn.tech.RestaurantReservation.exception.UserNotFoundException;
 import com.phn.tech.RestaurantReservation.model.AddMoneyToWallet;
 import com.phn.tech.RestaurantReservation.model.CustomerWalletResponse;
@@ -177,5 +178,11 @@ public class UserController {
 	
 	//MANAGER
 	//Only activated manager can provide services and add/remove restaurant
+//	@PostMapping("/manager/addTable")
+//	public ResponseEntity<String> addTable(@RequestBody RestaurantTable table){
+//		Long tableId = 	userService.addTable(table);
+//		return new ResponseEntity<String>("Table added, Id: "+tableId, HttpStatus.OK);
+//	}
+	
 
 }

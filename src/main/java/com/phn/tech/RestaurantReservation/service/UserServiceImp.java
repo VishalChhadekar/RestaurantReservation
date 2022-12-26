@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.phn.tech.RestaurantReservation.entity.Reservation;
 import com.phn.tech.RestaurantReservation.entity.Restaurant;
+import com.phn.tech.RestaurantReservation.entity.RestaurantTable;
 import com.phn.tech.RestaurantReservation.entity.Users;
 import com.phn.tech.RestaurantReservation.exception.RestaurantNotFoundException;
 import com.phn.tech.RestaurantReservation.exception.UserNotFoundException;
@@ -25,6 +26,7 @@ import com.phn.tech.RestaurantReservation.model.RestaurantModel;
 import com.phn.tech.RestaurantReservation.model.UserModel;
 import com.phn.tech.RestaurantReservation.repository.ReservationRepository;
 import com.phn.tech.RestaurantReservation.repository.RestaurantRepository;
+//import com.phn.tech.RestaurantReservation.repository.RestaurantTableRepository;
 import com.phn.tech.RestaurantReservation.repository.UsersRepository;
 
 import jakarta.validation.Valid;
@@ -38,6 +40,9 @@ public class UserServiceImp implements UserService{
 	
 	@Autowired
 	private RestaurantRepository restaurantRepository;
+	
+//	@Autowired
+//	private RestaurantTableRepository restaurantTableRepository;
 	
 	@Autowired
 	private UsersRepository usersRepository;
@@ -125,7 +130,7 @@ public class UserServiceImp implements UserService{
 		Reservation reservation = 
 				reservationRepository.findByCustId(id);
 
-		if(reservation.getBookingStatus()!="Booked") {
+		if(reservation.getBookingStatus()=="Booked") {
 			//Cancel booking     OR: We can Delete the row with CustId
 			reservation.setBookingStatus("Canceled");
 			reservation.setPaymentStatus("NA");
@@ -197,5 +202,11 @@ public class UserServiceImp implements UserService{
 		user.setActive(false);
 		usersRepository.save(user);
 	}
+
+//	@Override
+//	public Long addTable(RestaurantTable table) {
+//		RestaurantTable addedTable = restaurantTableRepository.save(table);
+//		return addedTable.getTableId();
+//	}
 		
 }

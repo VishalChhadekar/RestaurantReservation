@@ -1,12 +1,18 @@
 package com.phn.tech.RestaurantReservation.entity;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,7 +20,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@Builder
 public class Restaurant {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -27,7 +32,7 @@ public class Restaurant {
 	@Column(name = "ADDRESS")
 	private String address;
 	
-	@Column(name = "TABLECOUNT")
-	private long tableCount;
+	@OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
+	List<RestaurantTable> tables = new ArrayList<>();
 
 }

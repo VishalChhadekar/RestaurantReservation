@@ -32,7 +32,7 @@ public class WebSecurityConfig {
 	private  AppUserDetailsService appUserDetailsService;
 
 	private static final String[] WHITE_LIST_URLS ={
-			"/",
+			"/**",
 		"/register/**",
 		"/login/**"
 	};
@@ -52,11 +52,12 @@ public class WebSecurityConfig {
 		.csrf()
 		.disable()
 		.authorizeHttpRequests()
-        .requestMatchers("/admin/**").hasRole("ADMIN")
-        .requestMatchers("/manager/**").hasAnyRole("ADMIN", "MANAGER")
-        .requestMatchers("/customer/**").hasAnyRole("ADMIN","CUSTOMER")
-        .requestMatchers(WHITE_LIST_URLS).permitAll()
-//        .requestMatchers("/**").permitAll()
+//        .requestMatchers("/admin/**").hasRole("ADMIN")
+//        .requestMatchers("/manager/**").hasAnyRole("ADMIN", "MANAGER")
+//        .requestMatchers("/customer/**").hasAnyRole("ADMIN","CUSTOMER")
+//        .requestMatchers(WHITE_LIST_URLS).permitAll()
+        .requestMatchers("/**").permitAll()
+        .requestMatchers("/customer/**").permitAll()
         .and()
         .sessionManagement()
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
